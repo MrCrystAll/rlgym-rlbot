@@ -839,7 +839,7 @@ class RLGymBot(Generic[AgentID, ActionType, ObsType, RewardType]):
         - `display`: The message to be displayed in the game in "quick chat", or `None` to display nothing.
         - `team_only`: If True, only your team will receive the message.
         """
-        self._game_interface.send_match_comm(
+        self._game_interface.send_msg(
             flat.MatchComm(
                 self.index,
                 self.team,
@@ -862,8 +862,12 @@ class RLGymBot(Generic[AgentID, ActionType, ObsType, RewardType]):
         See wiki for a full break down and examples.
         """
 
-        game_state = fill_desired_game_state(balls, cars, match_info, commands)
-        self._game_interface.send_game_state(game_state)
+        game_state = fill_desired_game_state(balls, cars, match_info)
+        self._game_interface.send_msg(game_state)
+        # Since rlbot_flatbuffers 0.19, console commands are their own message
+        # instead of a field of DesiredGameState.
+        for command in commands:
+            self._game_interface.send_msg(flat.ConsoleCommand(command))
 
     def set_loadout(self, loadout: flat.PlayerLoadout, index: Optional[int] = None):
         """
@@ -872,8 +876,8 @@ class RLGymBot(Generic[AgentID, ActionType, ObsType, RewardType]):
         Does nothing if called outside `initialize` unless state setting is enabled in which case it
         respawns the car with the new loadout.
         """
-        self._game_interface.send_set_loadout(
-            flat.SetLoadout(index or self.index, loadout)
+        self._game_interface.send_msg(
+            flat.SetLoadout(self.index if index is None else index, loadout)
         )
 
     def initialize(self):

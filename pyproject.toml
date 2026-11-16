@@ -18,8 +18,8 @@ license-files = [
     "LICENSE"
 ]
 dependencies = [
-    "rlbot == 2.0.0b52",
-    "rlbot_flatbuffers >= 0.18.8",
+    "rlbot == 2.0.0b56",
+    "rlbot_flatbuffers >= 0.19.0",
     "rlgym[api] >= 2.0.1",
     "rlgym-compat >= 2.0.0"
 ]
